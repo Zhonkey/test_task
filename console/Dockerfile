@@ -2,4 +2,4 @@ FROM yiisoftware/yii2-php:8.4-fpm-nginx
 
 RUN apt-get update -yqq && apt-get install -y gettext-base
 
-RUN sed -i -e 's|/app/web|/app/backend/web|g' /etc/nginx/conf.d/default.conf
+ENTRYPOINT ["php", "./yii"]
