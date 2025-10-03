@@ -8,10 +8,12 @@ use Yii;
  * This is the model class for table "subscription".
  *
  * @property int $id
- * @property string|null $phone
+ * @property int $subscriber_id
  * @property int $author_id
  *
  * @property Author $author
+ * @property Subscriber $subscriber
+ * @property Notification[] $notifications
  */
 class Subscription extends BaseModel
 {
@@ -29,12 +31,11 @@ class Subscription extends BaseModel
     public function rules()
     {
         return [
-            [['phone'], 'default', 'value' => null],
-            [['author_id'], 'required'],
-            [['author_id'], 'integer'],
+            [['author_id', 'subscriber_id'], 'required'],
+            [['author_id', 'subscriber_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
-            [['phone'], 'string', 'max' => 255],
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => Author::class, 'targetAttribute' => ['author_id' => 'id']],
+            [['subscriber_id'], 'exist', 'skipOnError' => true, 'targetClass' => Subscriber::class, 'targetAttribute' => ['subscriber_id' => 'id']],
         ];
     }
 
@@ -47,6 +48,7 @@ class Subscription extends BaseModel
             'id' => 'ID',
             'phone' => 'Phone',
             'author_id' => 'Author ID',
+            'subscriber_id' => 'Subscriber ID',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
@@ -60,5 +62,25 @@ class Subscription extends BaseModel
     public function getAuthor()
     {
         return $this->hasOne(Author::class, ['id' => 'author_id']);
+    }
+
+    /**
+     * Gets query for [[Subscriber]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubscriber()
+    {
+        return $this->hasOne(Subscriber::class, ['id' => 'subscriber_id']);
+    }
+
+    /**
+     * Gets query for [[Notification]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getNotifications()
+    {
+        return $this->hasMany(Notification::class, ['id' => 'subscription_id']);
     }
 }

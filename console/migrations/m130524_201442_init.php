@@ -119,9 +119,17 @@ class m130524_201442_init extends Migration
             'id'
         );
 
-        $this->createTable('{{%subscription}}', [
+        $this->createTable('{{%subscriber}}', [
             'id' => $this->primaryKey(),
             'phone' => $this->string(),
+
+            'created_at' => $this->dateTime(),
+            'updated_at' => $this->dateTime(),
+        ], $tableOptions);
+
+        $this->createTable('{{%subscription}}', [
+            'id' => $this->primaryKey(),
+            'subscriber_id' => $this->integer()->notNull(),
             'author_id' => $this->integer()->notNull(),
 
             'created_at' => $this->dateTime(),
@@ -135,16 +143,64 @@ class m130524_201442_init extends Migration
             '{{%author}}',
             'id'
         );
+
+        $this->addForeignKey(
+            'fk_subscription_subscriber',
+            '{{%subscription}}',
+            'subscriber_id',
+            '{{%subscriber}}',
+            'id'
+        );
+
+        $this->createTable('{{%notification}}', [
+            'id' => $this->primaryKey(),
+            'subscription_id' => $this->integer(),
+            'book_id' => $this->integer(),
+            'is_success' => $this->boolean()->notNull(),
+
+            'created_at' => $this->dateTime(),
+            'updated_at' => $this->dateTime(),
+        ], $tableOptions);
+
+        $this->addForeignKey(
+            'fk_notification_subscription',
+            '{{%notification}}',
+            'subscription_id',
+            '{{%subscription}}',
+            'id'
+        );
+
+        $this->addForeignKey(
+            'fk_notification_book',
+            '{{%notification}}',
+            'book_id',
+            '{{%book}}',
+            'id'
+        );
     }
 
     public function down()
     {
+        $this->droPForeignKey(
+            'fk_notification_book',
+            '{{%notification}}',
+        );
+        $this->dropForeignKey(
+            'fk_notification_subscription',
+            '{{%notification}}',
+        );
+        $this->dropTable('{{%notification}}');
+
         $this->dropForeignKey(
             'fk_subscription_author',
             '{{%subscription}}',
         );
+        $this->dropForeignKey(
+            'fk_subscription_subscriber',
+            '{{%subscription}}',
+        );
         $this->dropTable('{{%subscription}}');
-
+        $this->dropTable('{{%subscriber}}');
 
         $this->dropForeignKey(
             'fk_book_author_author',

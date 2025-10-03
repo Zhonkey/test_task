@@ -16,6 +16,7 @@ use Yii;
  *
  * @property BookAuthor[] $bookAuthors
  * @property Author[] $authors
+ * @property Notification[] $notifications
  */
 class Book extends BaseCreatorModel
 {
@@ -78,5 +79,15 @@ class Book extends BaseCreatorModel
     public function getAuthors()
     {
         return $this->hasMany(Author::class, ['author_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Notification]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getNotifications()
+    {
+        return $this->hasMany(Notification::class, ['book_id' => 'id']);
     }
 }
