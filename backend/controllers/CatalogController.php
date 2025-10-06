@@ -2,7 +2,11 @@
 
 namespace backend\controllers;
 
+use backend\models\BookSearch;
+use backend\models\SubscribeForm;
 use common\models\Book;
+use common\models\Subscriber;
+use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -39,22 +43,13 @@ class CatalogController extends Controller
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Book::find(),
-            /*
-            'pagination' => [
-                'pageSize' => 50
-            ],
-            'sort' => [
-                'defaultOrder' => [
-                    'id' => SORT_DESC,
-                ]
-            ],
-            */
-        ]);
+        $search = new BookSearch();
+
+        $dataProvider = $search->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+            'searchModel' => $search
         ]);
     }
 
@@ -66,8 +61,11 @@ class CatalogController extends Controller
      */
     public function actionView($id)
     {
+        $subscriber = Subscriber::findOne(Yii::$app->session->get('subscriberId'));
+
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'subscriber' => $subscriber
         ]);
     }
 
@@ -76,21 +74,17 @@ class CatalogController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionSubscribe($id)
+    public function actionSubscribe()
     {
-        $model = new Book();
+        $form = new SubscribeForm();
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+        if ($form->load($this->request->post())) {
+            if($form->subscribe()) {
+                Yii::$app->session->set('subscriberId', $form->getSubscriber()->id);
             }
-        } else {
-            $model->loadDefaultValues();
         }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        return $this->goBack();
     }
 
     /**

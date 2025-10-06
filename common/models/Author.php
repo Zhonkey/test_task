@@ -86,4 +86,9 @@ class Author extends BaseCreatorModel
     {
         return $this->hasMany(Book::class, ['id' => 'book_id'])->via('book_author');
     }
+
+    public function getFullName()
+    {
+        return implode(' ', array_filter([$this->first_name, $this->last_name, $this->surname]));
+    }
 }

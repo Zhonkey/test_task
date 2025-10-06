@@ -1,5 +1,6 @@
 <?php
 
+use common\models\Book;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -34,12 +35,37 @@ $this->params['breadcrumbs'][] = $this->title;
             'year',
             'description:ntext',
             'isbn',
-            'cover',
-            'created_at',
-            'updated_at',
-            'created_by',
-            'updated_by',
+            [
+                    'attribute' => 'cover',
+                    'value' => fn (Book $book) => $book->cover ? Html::img("/$book->cover", ['alt' => $book->cover, 'height' => 200]) : '-',
+                    'format' => 'raw',
+            ],
+            [
+                    'attribute' => 'created_at',
+                    'value' => fn (Book $book) => $book->created_at->format('Y-m-d H:i:s'),
+            ],
+            [
+                    'attribute' => 'created_by',
+                    'value' => fn (Book $book) => $book->creator?->username ?? 'System',
+            ],
+            [
+                    'attribute' => 'updated_at',
+                    'value' => fn (Book $book) => $book->updated_at->format('Y-m-d H:i:s'),
+            ],
+            [
+                    'attribute' => 'updated_by',
+                    'value' => fn (Book $book) => $book->updater?->username ?? 'System',
+            ],
         ],
     ]) ?>
 
+    <h3>Authors</h3>
+
+    <ul>
+        <?php foreach ($model->authors as $author): ?>
+            <li>
+                <?=$author->getFullName()?>
+            </li>
+        <?php endforeach;?>
+    </ul>
 </div>

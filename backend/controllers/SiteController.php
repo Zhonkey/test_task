@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\models\LoginForm;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -52,16 +53,6 @@ class SiteController extends Controller
                 'class' => \yii\web\ErrorAction::class,
             ],
         ];
-    }
-
-    /**
-     * Displays homepage.
-     *
-     * @return string
-     */
-    public function actionIndex()
-    {
-        return $this->render('index');
     }
 
     /**

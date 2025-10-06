@@ -8,6 +8,7 @@ namespace common\models;
  * @property int $id
  * @property int|null $subscription_id
  * @property int $is_success
+ * @property int|null $book_id
  * @property string|null $created_at
  * @property string|null $updated_at
  *
@@ -32,7 +33,7 @@ class Notification extends BaseModel
         return [
             [['subscription_id', 'book_id', 'created_at', 'updated_at'], 'default', 'value' => null],
             [['subscription_id', 'book_id', 'is_success'], 'integer'],
-            [['is_success'], 'required'],
+            [['subscription_id', 'book_id'], 'required'],
             [['created_at', 'updated_at'], 'safe'],
             [['subscription_id'], 'exist', 'skipOnError' => true, 'targetClass' => Subscription::class, 'targetAttribute' => ['subscription_id' => 'id']],
             [['book_id'], 'exist', 'skipOnError' => true, 'targetClass' => Book::class, 'targetAttribute' => ['book_id' => 'id']],

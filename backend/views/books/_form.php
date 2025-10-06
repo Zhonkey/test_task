@@ -1,10 +1,14 @@
 <?php
 
+use kartik\select2\Select2;
 use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 
 /** @var yii\web\View $this */
-/** @var common\models\Book $model */
+/** @var \backend\models\BookForm $model */
+/** @var \common\models\Book $book */
 /** @var yii\widgets\ActiveForm $form */
 ?>
 
@@ -20,11 +24,37 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'isbn')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'cover')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'cover')->fileInput() ?>
 
-    <?= $form->field($model, 'created_at')->textInput() ?>
+    <?php if ($book->cover):?>
+        <img src="/<?=$book->cover?>" style="width: 200px" alt="book_cover">
+    <?php endif;?>
 
-    <?= $form->field($model, 'updated_at')->textInput() ?>
+    <?= $form->field($model, 'authors')->widget(Select2::class, [
+            'options' => [
+                'placeholder' => 'Select authors...',
+                'multiple' => true,
+            ],
+            'pluginOptions' => [
+                'allowClear' => true,
+                'minimumInputLength' => 2,
+                'ajax' => [
+                    'url' => Url::to(['/authors/list']),
+                    'dataType' => 'json',
+                    'delay' => 250,
+                    'data' => new JsExpression('function(params) { 
+                        return {q:params.term}; 
+                    }'),
+                    'processResults' => new JsExpression('function(data) {
+                        return {results:data};
+                    }'),
+                ],
+                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                'templateResult' => new JsExpression('function(author) { return author.text; }'),
+                'templateSelection' => new JsExpression('function (author) { return author.text; }'),
+            ],
+            'data' => $model->getAuthorTexts(),
+    ]); ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

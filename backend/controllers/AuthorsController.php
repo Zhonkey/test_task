@@ -2,20 +2,19 @@
 
 namespace backend\controllers;
 
-use backend\models\BookForm;
-use backend\models\BookSearch;
-use common\models\Book;
-use Yii;
+use backend\models\AuthorForm;
+use backend\models\AuthorSearch;
+use common\models\Author;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\web\UploadedFile;
 
 /**
- * BooksController implements the CRUD actions for Book model.
+ * AuthorController implements the CRUD actions for Author model.
  */
-class BooksController extends Controller
+class AuthorsController extends Controller
 {
     /**
      * @inheritDoc
@@ -26,7 +25,7 @@ class BooksController extends Controller
             parent::behaviors(),
             [
                 'verbs' => [
-                    'class' => VerbFilter::class,
+                    'class' => VerbFilter::className(),
                     'actions' => [
                         'delete' => ['POST'],
                     ],
@@ -38,6 +37,10 @@ class BooksController extends Controller
                             'allow' => true,
                             'roles' => ['@'],
                         ],
+                        [
+                            'actions' => ['list'],
+                            'allow' => true,
+                        ],
                     ],
                 ],
             ]
@@ -45,24 +48,23 @@ class BooksController extends Controller
     }
 
     /**
-     * Lists all Book models.
+     * Lists all Author models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $search = new BookSearch();
-
-        $dataProvider = $search->search(Yii::$app->request->queryParams);
+        $searchModel = new AuthorSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-            'searchModel' => $search
+            'searchModel' => $searchModel,
         ]);
     }
 
     /**
-     * Displays a single Book model.
+     * Displays a single Author model.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -75,30 +77,26 @@ class BooksController extends Controller
     }
 
     /**
-     * Creates a new Book model.
+     * Creates a new Author model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $book = new Book();
-        $model = BookForm::buildFromModel($book);
+        $author = new Author();
+        $formModel = AuthorForm::buildFromModel($author);
 
-        if ($model->load($this->request->post())) {
-            $model->cover = UploadedFile::getInstance($model, 'cover');
-            if($model->updateAndSave()) {
-                return $this->redirect(['view', 'id' => $book->id]);
-            }
+        if ($formModel->load($this->request->post()) && $formModel->updateAndSave($author)) {
+            return $this->redirect(['view', 'id' => $author->id]);
         }
 
         return $this->render('create', [
-            'model' => $model,
-            'book' => $book,
+            'model' => $formModel,
         ]);
     }
 
     /**
-     * Updates an existing Book model.
+     * Updates an existing Author model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
      * @return string|\yii\web\Response
@@ -106,24 +104,21 @@ class BooksController extends Controller
      */
     public function actionUpdate($id)
     {
-        $book = $this->findModel($id);
-        $model = BookForm::buildFromModel($book);
+        $author = $this->findModel($id);
+        $formModel = AuthorForm::buildFromModel($author);
 
-        if ($model->load($this->request->post())) {
-            $model->cover = UploadedFile::getInstance($model, 'cover');
-            if($model->updateAndSave()) {
-                return $this->redirect(['view', 'id' => $book->id]);
-            }
+        if ($this->request->isPost && $formModel->load($this->request->post()) && $formModel->updateAndSave($author)) {
+            return $this->redirect(['view', 'id' => $author->id]);
         }
 
         return $this->render('update', [
-            'model' => $model,
-            'book' => $book,
+            'model' => $formModel,
+            'author' => $author,
         ]);
     }
 
     /**
-     * Deletes an existing Book model.
+     * Deletes an existing Author model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return \yii\web\Response
@@ -137,18 +132,33 @@ class BooksController extends Controller
     }
 
     /**
-     * Finds the Book model based on its primary key value.
+     * Finds the Author model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return Book the loaded model
+     * @return Author the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Book::findOne(['id' => $id])) !== null) {
+        if (($model = Author::findOne(['id' => $id])) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionList($q = null)
+    {
+        $authors = Author::find()
+            ->orFilterWhere(['like', 'first_name', $q])
+            ->orFilterWhere(['like', 'last_name', $q])
+            ->orFilterWhere(['like', 'surname', $q])
+            ->limit(20)
+            ->all();
+
+        return $this->asJson(ArrayHelper::getColumn($authors, fn(Author $author) => [
+            'id' => $author->id,
+            'text' => $author->getFullName()
+        ]));
     }
 }

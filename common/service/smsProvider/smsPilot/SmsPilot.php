@@ -1,5 +1,5 @@
 <?php
-namespace app\common\service\smsPilot;
+namespace common\service\smsProvider\smsPilot;
 
 /* SMS Pilot.Class API/PHP v1.9.10
  * SEE: http://www.smspilot.ru/apikey.php
@@ -78,7 +78,7 @@ namespace app\common\service\smsPilot;
 	echo $sms->balance().' руб.'; // 1680.25 руб.
 
 */
-class SMSPilot {
+class SmsPilot {
     public $api = 'http://smspilot.ru/api.php';
     public $apikey = 'XXXXXXXXXXXXYYYYYYYYYYYYZZZZZZZZXXXXXXXXXXXXYYYYYYYYYYYYZZZZZZZZ';
     public $charset = 'UTF-8';
@@ -95,12 +95,12 @@ class SMSPilot {
     public $balance; // new in 1.8
     // public $limit; // removed 1.8
 
-    public function __construct( $apikey = false,  $charset = false, $from = false ) {
+    public function __construct( $apikey = null,  $charset = null, $from = null ) {
 
-        $this->apikey = \Yii::$app->params['SMSPILOT_APIKEY'] ?: $apikey;
-        $this->charset = \Yii::$app->params['SMSPILOT_CHARSET'] ?: $charset;
-        $this->from = \Yii::$app->params['SMSPILOT_FROM'] ?: $from;
-        $this->api = \Yii::$app->params['SMSPILOT_API'] ?: $this->api;
+        $this->apikey = ((\Yii::$app->params['SMSPILOT_APIKEY'] ?? null) ?: $apikey) ?? $this->apikey;
+        $this->charset = ((\Yii::$app->params['SMSPILOT_CHARSET'] ?? null) ?: $charset) ?? $this->charset;
+        $this->from = ((\Yii::$app->params['SMSPILOT_FROM'] ?? null) ?: $from) ?? $this->from;
+        $this->api = (\Yii::$app->params['SMSPILOT_API'] ?? null) ?: $this->api;
     }
 
     // send sms via smspilot.ru

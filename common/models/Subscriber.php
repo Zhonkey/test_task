@@ -9,6 +9,7 @@ namespace common\models;
  * @property string|null $phone
  *
  * @property Subscription[] $subscriptions
+ * @property Notification[] $notifications
  */
 class Subscriber extends BaseModel
 {
@@ -53,5 +54,20 @@ class Subscriber extends BaseModel
     public function getSubscriptions()
     {
         return $this->hasMany(Subscription::class, ['subscriber_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Notification]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getNotifications()
+    {
+        return $this->hasMany(Notification::class, ['subscription_id' => 'id'])->via('subscriptions');
+    }
+
+    public function isSubscribedTo(Author $author)
+    {
+        return $this->getSubscriptions()->andWhere(['author_id' => $author->id])->exists();
     }
 }

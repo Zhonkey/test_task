@@ -81,6 +81,6 @@ class Subscription extends BaseModel
      */
     public function getNotifications()
     {
-        return $this->hasMany(Notification::class, ['id' => 'subscription_id']);
+        return $this->hasMany(Notification::class, ['subscription_id' => 'id']);
     }
 }

@@ -15,7 +15,8 @@ class m130524_201442_init extends Migration
         $this->createTable('{{%user}}', [
             'id' => $this->primaryKey(),
             'username' => $this->string(),
-            'password_hash' => $this->integer()->notNull(),
+            'password_hash' => $this->string()->notNull(),
+            'auth_key' => $this->string()->notNull(),
 
             'created_at' => $this->dateTime(),
             'updated_at' => $this->dateTime(),
@@ -40,14 +41,18 @@ class m130524_201442_init extends Migration
             '{{%book}}',
             'created_by',
             '{{%user}}',
-            'id'
+            'id',
+            'CASCADE',
+            'CASCADE'
         );
         $this->addForeignKey(
             'fk_book_updated_by',
             '{{%book}}',
             'updated_by',
             '{{%user}}',
-            'id'
+            'id',
+            'CASCADE',
+            'CASCADE'
         );
 
         $this->createTable('{{%author}}', [
@@ -67,14 +72,18 @@ class m130524_201442_init extends Migration
             '{{%author}}',
             'created_by',
             '{{%user}}',
-            'id'
+            'id',
+            'CASCADE',
+            'CASCADE'
         );
         $this->addForeignKey(
             'fk_author_updated_by',
             '{{%author}}',
             'updated_by',
             '{{%user}}',
-            'id'
+            'id',
+            'CASCADE',
+            'CASCADE'
         );
 
         $this->createTable('{{%book_author}}', [
@@ -93,7 +102,9 @@ class m130524_201442_init extends Migration
             '{{%book_author}}',
             'book_id',
             '{{%book}}',
-            'id'
+            'id',
+            'CASCADE',
+            'CASCADE'
         );
 
         $this->addForeignKey(
@@ -101,7 +112,9 @@ class m130524_201442_init extends Migration
             '{{%book_author}}',
             'author_id',
             '{{%author}}',
-            'id'
+            'id',
+            'CASCADE',
+            'CASCADE'
         );
 
         $this->addForeignKey(
@@ -109,14 +122,18 @@ class m130524_201442_init extends Migration
             '{{%book_author}}',
             'created_by',
             '{{%user}}',
-            'id'
+            'id',
+            'CASCADE',
+            'CASCADE'
         );
         $this->addForeignKey(
             'fk_book_author_updated_by',
             '{{%book_author}}',
             'updated_by',
             '{{%user}}',
-            'id'
+            'id',
+            'CASCADE',
+            'CASCADE'
         );
 
         $this->createTable('{{%subscriber}}', [
@@ -141,7 +158,9 @@ class m130524_201442_init extends Migration
             '{{%subscription}}',
             'author_id',
             '{{%author}}',
-            'id'
+            'id',
+            'CASCADE',
+            'CASCADE'
         );
 
         $this->addForeignKey(
@@ -149,14 +168,16 @@ class m130524_201442_init extends Migration
             '{{%subscription}}',
             'subscriber_id',
             '{{%subscriber}}',
-            'id'
+            'id',
+            'CASCADE',
+            'CASCADE'
         );
 
         $this->createTable('{{%notification}}', [
             'id' => $this->primaryKey(),
             'subscription_id' => $this->integer(),
             'book_id' => $this->integer(),
-            'is_success' => $this->boolean()->notNull(),
+            'is_success' => $this->boolean(),
 
             'created_at' => $this->dateTime(),
             'updated_at' => $this->dateTime(),
@@ -167,7 +188,9 @@ class m130524_201442_init extends Migration
             '{{%notification}}',
             'subscription_id',
             '{{%subscription}}',
-            'id'
+            'id',
+            'CASCADE',
+            'CASCADE'
         );
 
         $this->addForeignKey(
@@ -175,7 +198,9 @@ class m130524_201442_init extends Migration
             '{{%notification}}',
             'book_id',
             '{{%book}}',
-            'id'
+            'id',
+            'CASCADE',
+            'CASCADE'
         );
     }
 

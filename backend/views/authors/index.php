@@ -1,6 +1,7 @@
 <?php
 
-use common\models\Book;
+use backend\models\AuthorSearch;
+use common\models\Author;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
@@ -8,17 +9,17 @@ use yii\grid\GridView;
 
 /** @var yii\web\View $this */
 /** @var yii\data\ActiveDataProvider $dataProvider */
-/** @var \backend\models\BookSearch $searchModel */
+/** @var AuthorSearch $searchModel */
 
-$this->title = 'Books';
+$this->title = 'Authors';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="book-index">
+<div class="author-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Book', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Author', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
 
@@ -29,22 +30,16 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'title',
-            'year',
-            'description:ntext',
-            'isbn',
-            [
-                'attribute' => 'cover',
-                'value' => fn (Book $book) => $book->cover ? Html::img("/$book->cover", ['alt' => $book->cover, 'height' => 200]) : '-',
-                'format' => 'raw',
-            ],
+            'first_name',
+            'last_name',
+            'surname',
             [
                 'attribute' => 'created_at',
-                'value' => fn (Book $book) => $book->created_at->format('Y-m-d H:i:s'),
+                'value' => fn (Author $author) => $author->created_at->format('Y-m-d H:i:s'),
             ],
             [
                 'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Book $model, $key, $index, $column) {
+                'urlCreator' => function ($action, Author $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
                  }
             ],

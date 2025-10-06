@@ -78,7 +78,7 @@ class Book extends BaseCreatorModel
      */
     public function getAuthors()
     {
-        return $this->hasMany(Author::class, ['author_id' => 'id']);
+        return $this->hasMany(Author::class, ['id' => 'author_id'])->via('bookAuthors');
     }
 
     /**

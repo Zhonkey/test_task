@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use common\jobs\InitNotificationsJob;
 use Yii;
 
 /**
@@ -70,5 +71,15 @@ class BookAuthor extends BaseCreatorModel
     public function getBook()
     {
         return $this->hasOne(Book::class, ['id' => 'book_id']);
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        Yii::$app->queue->push(new InitNotificationsJob([
+            'bookId' => $this->book_id,
+            'authorId' => $this->author_id,
+        ]));
     }
 }
