@@ -26,7 +26,7 @@ services:
       - docker-compose.env.local
 
   mysql:
-    image: mysql:5.7
+    image: mysql:8.0
     volumes:
       - /var/lib/infotek:/var/lib/mysql:delegated
     environment:

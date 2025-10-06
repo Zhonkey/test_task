@@ -4,11 +4,11 @@ namespace backend\controllers;
 
 use backend\models\BookSearch;
 use backend\models\SubscribeForm;
+use common\components\report\topYear\TopYearReport;
 use common\models\Book;
 use common\models\Subscriber;
 use Yii;
-use yii\data\ActiveDataProvider;
-use yii\filters\AccessControl;
+use yii\data\ArrayDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -34,6 +34,30 @@ class CatalogController extends Controller
                 ]
             ]
         );
+    }
+
+    /**
+     * Lists all Book models.
+     *
+     * @return string
+     */
+    public function actionReport($year = null)
+    {
+        $report = new TopYearReport();
+        if($year){
+            $reportData = $report->request($year);
+        } else {
+            $reportData = $report->totalYearsTop();
+        }
+
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $reportData,
+        ]);
+
+        return $this->render('report', [
+            'dataProvider' => $dataProvider,
+            'year' => $year,
+        ]);
     }
 
     /**

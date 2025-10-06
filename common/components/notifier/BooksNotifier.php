@@ -39,17 +39,6 @@ class BooksNotifier extends \yii\base\Component
             ])
             ->all();
 
-        var_dump(Subscription::find()
-            ->andWhere(['author_id' => $author->id])
-            ->andWhere([
-                'NOT EXISTS',
-                Notification::find()
-                    ->where(['book_id' => $book->id])
-                    ->where(['is_success' => true])
-                    ->andWhere(Notification::tableName() .  '.subscription_id = ' . Subscription::tableName() .  '.id')
-            ])->createCommand()->rawSql);
-        var_dump(count($subscriptions));
-
         foreach ($subscriptions as $subscription) {
             $notification = new Notification([
                 'subscription_id' => $subscription->id,
